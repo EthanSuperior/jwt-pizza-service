@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "cd src && node index.js",
-    "test": "jest"
+    "test": "jest",
+    "push": "git add . && git commit -m \"${npm_config_msg} && git push\""
   },
   "license": "MIT",
   "dependencies": {
