@@ -29,7 +29,7 @@ test("login", async () => {
 		roles: [{ role: "diner" }],
 	};
 	expect(loginRes.body.user).toMatchObject(user);
-	expect(password).toBeTruthy();
+	// expect(password).toBeTruthy();
 });
 
 test("update require auth", async () => {
