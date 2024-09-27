@@ -1,16 +1,16 @@
+/*eslint no-unused-vars: ["error", { "argsIgnorePattern": "^_" }]*/
+
 const { Role, DB } = require("../database/database.js");
 const request = require("supertest");
 const app = require("../service.js");
 const config = require("../config.js");
-
-const jwtMatchRegExp = /^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/;
 
 let adminUser;
 let adminUserToken;
 let franchise;
 let store;
 let menu;
-let order;
+// let order;
 
 function randomName() {
 	return Math.random().toString(36).substring(2, 12);

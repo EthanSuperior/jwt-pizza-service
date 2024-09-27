@@ -1,3 +1,5 @@
+/*eslint no-unused-vars: ["error", { "argsIgnorePattern": "^_" }]*/
+
 const request = require("supertest");
 const app = require("../service.js");
 const config = require("../config.js");
@@ -22,11 +24,12 @@ test("login", async () => {
 	expect(loginRes.status).toBe(200);
 	expect(loginRes.body.token).toMatch(jwtMatchRegExp);
 
-	const { password: _, ...user } = {
+	const { password, ...user } = {
 		...testUser,
 		roles: [{ role: "diner" }],
 	};
 	expect(loginRes.body.user).toMatchObject(user);
+	expect(password).toBeTruthy();
 });
 
 test("update require auth", async () => {

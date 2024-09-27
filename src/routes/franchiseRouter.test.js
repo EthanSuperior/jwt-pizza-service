@@ -3,8 +3,6 @@ const request = require("supertest");
 const app = require("../service.js");
 const config = require("../config.js");
 
-const jwtMatchRegExp = /^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/;
-
 let adminUser;
 let adminUserToken;
 let franchise;
