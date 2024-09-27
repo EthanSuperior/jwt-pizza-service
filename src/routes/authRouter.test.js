@@ -24,12 +24,12 @@ test("login", async () => {
 	expect(loginRes.status).toBe(200);
 	expect(loginRes.body.token).toMatch(jwtMatchRegExp);
 
-	const { password, ...user } = {
-		...testUser,
+	const user = {
+		name: testUser.name,
+		email: testUser.email,
 		roles: [{ role: "diner" }],
 	};
 	expect(loginRes.body.user).toMatchObject(user);
-	// expect(password).toBeTruthy();
 });
 
 test("update require auth", async () => {
