@@ -9,6 +9,8 @@ let adminUser;
 let adminUserToken;
 let franchise;
 let store;
+let menu;
+let order;
 
 function randomName() {
 	return Math.random().toString(36).substring(2, 12);
@@ -59,79 +61,76 @@ beforeAll(async () => {
 	expect(loginRes.status).toBe(200);
 	adminUser = loginRes.body.user;
 	adminUserToken = loginRes.body.token;
+
 	franchise = { name: randomName(), admins: [{ email: adminUser.email }] };
 	store = { name: randomName() };
-});
 
-test("create new franchise", async () => {
 	const addReq = await request(app)
 		.post("/api/franchise")
 		.set("Authorization", `Bearer ${adminUserToken}`)
 		.send(franchise);
 	expect(addReq.status).toBe(200);
 	franchise.id = addReq.body.id;
-	expect(addReq.body.name).toBe(franchise.name);
-	expect(addReq.body.admins[0].email).toBe(adminUser.email);
-});
 
-test("create franchise store", async () => {
 	const addRes = await request(app)
 		.post("/api/franchise/" + franchise.id + "/store")
 		.set("Authorization", `Bearer ${adminUserToken}`)
 		.send(store);
 	expect(addRes.status).toBe(200);
 	store.id = addRes.body.id;
-	expect(addRes.body.franchiseId).toBe(franchise.id);
-	expect(addRes.body.name).toBe(store.name);
+
+	menu = {
+		title: randomName(),
+		description: randomName(),
+		image: randomName() + ".png",
+		price: Math.random(),
+	};
 });
 
-test("list franchises", async () => {
-	const listRes = await request(app).get("/api/franchise").send();
-	expect(listRes.status).toBe(200);
-	expect(listRes.body).toContainObject({
-		id: franchise.id,
-		name: franchise.name,
-		stores: [{ id: store.id, name: store.name }],
-	});
+test("Add Menu Item", async () => {
+	const addRes = await request(app)
+		.put("/api/order/menu")
+		.set("Authorization", `Bearer ${adminUserToken}`)
+		.send(menu);
+	expect(addRes.status).toBe(200);
+	menu.id = addRes.body.id;
+	expect(addRes.body.title).toBe(menu.name);
+	expect(addRes.body.description).toBe(menu.description);
 });
 
-test("list user's franchise", async () => {
-	const listRes = await request(app)
-		.get("/api/franchise/" + adminUser.id)
-		.set("Authorization", `Bearer ${adminUserToken}`)
-		.send();
+test("Get Menu", async () => {
+	const listRes = await request(app).get("/api/order/menu").send();
 	expect(listRes.status).toBe(200);
-	expect(listRes.body).toContainObject({
-		id: franchise.id,
-		name: franchise.name,
-		stores: [{ id: store.id, name: store.name, totalRevenue: 0 }],
-		admins: [
-			{ id: adminUser.id, name: adminUser.name, email: adminUser.email },
-		],
-	});
-});
-test("delete a franchise store", async () => {
-	const removeRes = await request(app)
-		.delete("/api/franchise/" + franchise.id + "/store/" + store.id)
-		.set("Authorization", `Bearer ${adminUserToken}`)
-		.send();
-	expect(removeRes.status).toBe(200);
-	expect(removeRes.body.message).toBe("store deleted");
-});
-test("remove a franchise", async () => {
-	const removeRes = await request(app)
-		.delete("/api/franchise/" + franchise.id)
-		.set("Authorization", `Bearer ${adminUserToken}`)
-		.send();
-	expect(removeRes.status).toBe(200);
-	expect(removeRes.body.message).toBe("franchise deleted");
+	expect(listRes.body).toContainObject(menu);
 });
 
-test("list user's franchise", async () => {
-	const listRes = await request(app)
-		.get("/api/franchise/" + adminUser.id)
-		.set("Authorization", `Bearer ${adminUserToken}`)
-		.send();
-	expect(listRes.status).toBe(200);
-	expect(listRes.body).toStrictEqual([]);
-});
+test("Add Order", async () => {});
+
+test("Get Order", async () => {});
+/*
+  {
+    method: 'PUT',
+    path: '/api/order/menu',
+    requiresAuth: true,
+    description: 'Add an item to the menu',
+    example: `curl -X PUT localhost:3000/api/order/menu -H 'Content-Type: application/json' -d '{ "title":"Student", "description": "No topping, no sauce, just carbs", "image":"pizza9.png", "price": 0.0001 }'  -H 'Authorization: Bearer tttttt'`,
+    response: [{ id: 1, title: 'Student', description: 'No topping, no sauce, just carbs', image: 'pizza9.png', price: 0.0001 }],
+  },
+  {
+    method: 'GET',
+    path: '/api/order',
+    requiresAuth: true,
+    description: 'Get the orders for the authenticated user',
+    example: `curl -X GET localhost:3000/api/order  -H 'Authorization: Bearer tttttt'`,
+    response: { dinerId: 4, orders: [{ id: 1, franchiseId: 1, storeId: 1, date: '2024-06-05T05:14:40.000Z', items: [{ id: 1, menuId: 1, description: 'Veggie', price: 0.05 }] }], page: 1 },
+  },
+  {
+    method: 'POST',
+    path: '/api/order',
+    requiresAuth: true,
+    description: 'Create a order for the authenticated user',
+    example: `curl -X POST localhost:3000/api/order -H 'Content-Type: application/json' -d '{"franchiseId": 1, "storeId":1, "items":[{ "menuId": 1, "description": "Veggie", "price": 0.05 }]}'  -H 'Authorization: Bearer tttttt'`,
+    response: { order: { franchiseId: 1, storeId: 1, items: [{ menuId: 1, description: 'Veggie', price: 0.05 }], id: 1 }, jwt: '1111111111' },
+  },
+];
+*/
