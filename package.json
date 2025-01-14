@@ -6,7 +6,6 @@
   "scripts": {
     "start": "cd src && node index.js",
     "test": "jest",
-    "push": "git add . && git commit -m \"${npm_config_msg} && git push\"",
     "lint": "eslint ."
   },
   "license": "MIT",
