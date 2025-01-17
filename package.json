@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cd src && node index.js",
-    "test": "./generateDBData.sh && jest",
+    "test": "jest",
     "lint": "eslint ."
   },
   "license": "MIT",
