@@ -31,14 +31,14 @@ function sendMetricsPeriodically(period) {
 function sendMetricToGrafana(metrics) {
 	const metric = { resourceMetrics: [{ scopeMetrics: [{ metrics }] }] };
 
-	if (type === "sum") {
-		metric.resourceMetrics[0].scopeMetrics[0].metrics[0][
-			type
-		].aggregationTemporality = "AGGREGATION_TEMPORALITY_CUMULATIVE";
-		metric.resourceMetrics[0].scopeMetrics[0].metrics[0][
-			type
-		].isMonotonic = true;
-	}
+	// if (type === "sum") {
+	// 	metric.resourceMetrics[0].scopeMetrics[0].metrics[0][
+	// 		type
+	// 	].aggregationTemporality = "AGGREGATION_TEMPORALITY_CUMULATIVE";
+	// 	metric.resourceMetrics[0].scopeMetrics[0].metrics[0][
+	// 		type
+	// 	].isMonotonic = true;
+	// }
 
 	const body = JSON.stringify(metric);
 	fetch(`${config.url}`, {
@@ -82,7 +82,7 @@ function metricObj(metricName, metricValue, type, unit) {
 
 function httpMetrics() {
 	const metrics = [];
-	for (key in httpReq) {
+	for (let key in httpReq) {
 		metrics.push(
 			metricObj("http_" + key.toLowerCase(), httpMetrics[key], "sum", 1)
 		);
