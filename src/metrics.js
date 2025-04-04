@@ -13,7 +13,7 @@ function getMemoryUsagePercentage() {
 	const memoryUsage = (usedMemory / totalMemory) * 100;
 	return memoryUsage.toFixed(2);
 }
-export function sendMetricsPeriodically(period) {
+function sendMetricsPeriodically(period) {
 	const timer = setInterval(() => {
 		try {
 			const metrics = [];
@@ -90,13 +90,23 @@ function httpMetrics() {
 	}
 	return metrics;
 }
-function systemMetrics() {return [];}
-function userMetrics() {return [];}
-function purchaseMetrics() {return [];}
-function authMetrics() {return [];}
+function systemMetrics() {
+	return [];
+}
+function userMetrics() {
+	return [];
+}
+function purchaseMetrics() {
+	return [];
+}
+function authMetrics() {
+	return [];
+}
 let httpReq = { GET: 0, POST: 0, PUT: 0, DELETE: 0, TOTAL: 0 };
-export function requestTracker(req, _res, next) {
+function requestTracker(req, _res, next) {
 	httpReq[req.method]++;
 	httpReq.TOTAL++;
 	next();
 }
+
+module.exports = { requestTracker, sendMetricsPeriodically };
