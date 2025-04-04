@@ -1,20 +1,20 @@
 const os = require("os");
 const config = require("./config");
 
-function _getCpuUsagePercentage() {
-	const cpuUsage = os.loadavg()[0] / os.cpus().length;
-	return cpuUsage.toFixed(2) * 100;
-}
+// function _getCpuUsagePercentage() {
+// 	const cpuUsage = os.loadavg()[0] / os.cpus().length;
+// 	return cpuUsage.toFixed(2) * 100;
+// }
 
-function _getMemoryUsagePercentage() {
-	const totalMemory = os.totalmem();
-	const freeMemory = os.freemem();
-	const usedMemory = totalMemory - freeMemory;
-	const memoryUsage = (usedMemory / totalMemory) * 100;
-	return memoryUsage.toFixed(2);
-}
+// function _getMemoryUsagePercentage() {
+// 	const totalMemory = os.totalmem();
+// 	const freeMemory = os.freemem();
+// 	const usedMemory = totalMemory - freeMemory;
+// 	const memoryUsage = (usedMemory / totalMemory) * 100;
+// 	return memoryUsage.toFixed(2);
+// }
 function sendMetricsPeriodically(period) {
-	const timer = setInterval(() => {
+	return setInterval(() => {
 		try {
 			const metrics = [];
 			metrics.push(...httpMetrics());
