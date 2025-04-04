@@ -1,12 +1,12 @@
 const os = require("os");
 const config = require("./config");
 
-function getCpuUsagePercentage() {
+function _getCpuUsagePercentage() {
 	const cpuUsage = os.loadavg()[0] / os.cpus().length;
 	return cpuUsage.toFixed(2) * 100;
 }
 
-function getMemoryUsagePercentage() {
+function _getMemoryUsagePercentage() {
 	const totalMemory = os.totalmem();
 	const freeMemory = os.freemem();
 	const usedMemory = totalMemory - freeMemory;
@@ -57,7 +57,7 @@ function sendMetricToGrafana(metrics) {
 					);
 				});
 			} else {
-				console.log(`Pushed ${metricName}`);
+				console.log(`Pushed all metrics`);
 			}
 		})
 		.catch((error) => {
