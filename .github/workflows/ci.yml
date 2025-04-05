@@ -50,7 +50,7 @@ jobs:
                 host: '127.0.0.1',
                 user: 'root',
                 password: 'tempdbpassword',
-                database: 'pizzatest',
+                database: 'pizza',
                 connectTimeout: 60000,
               },
               listPerPage: 10,
@@ -60,7 +60,7 @@ jobs:
               apiKey: '${{ secrets.FACTORY_API_KEY }}',
             },
             metrics: {
-              source: 'jwt-pizza-service',
+              source: '${{ secrets.METRICS_SOURCE }}',
               url: '${{ secrets.METRICS_URL }}',
               apiKey: '${{ secrets.METRICS_API_KEY }}',
             },   

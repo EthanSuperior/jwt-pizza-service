@@ -164,6 +164,12 @@ function metricObj(metricName, metricValue, type, unit) {
 				{
 					[Number.isInteger(metricValue) ? "asInt" : "asDouble"]: metricValue,
 					timeUnixNano: Date.now() * 1000000,
+					attributes: [
+						{
+							key: "source",
+							value: { stringValue: config.metrics.source },
+						},
+					],
 				},
 			],
 			...(type !== "sum"
@@ -179,11 +185,11 @@ function metricObj(metricName, metricValue, type, unit) {
 function sendMetricToGrafana(metrics) {
 	const metric = { resourceMetrics: [{ scopeMetrics: [{ metrics }] }] };
 	const body = JSON.stringify(metric);
-	fetch(`${config.url}`, {
+	fetch(`${config.metrics.url}`, {
 		method: "POST",
 		body: body,
 		headers: {
-			Authorization: `Bearer ${config.apiKey}`,
+			Authorization: `Bearer ${config.metrics.appKey}`,
 			"Content-Type": "application/json",
 		},
 	})
