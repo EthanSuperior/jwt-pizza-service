@@ -452,7 +452,7 @@ class DB {
 						defaultData.users.forEach((u) => {
 							try {
 								this.addUser(u);
-							} catch (e) {}
+							} catch {}
 						});
 						defaultData.franchises.forEach((d) => {
 							const { stores, ...f } = d;
@@ -461,16 +461,16 @@ class DB {
 								stores.forEach((s) => {
 									try {
 										this.createStore(id, s);
-									} catch (e) {}
+									} catch {}
 								});
-							} catch (e) {}
+							} catch {}
 						});
 						defaultData.menu.forEach((item) => {
 							try {
 								this.addMenuItem(item);
-							} catch (e) {}
+							} catch {}
 						});
-					} catch (e) {}
+					} catch {}
 				}
 			} finally {
 				connection.end();
