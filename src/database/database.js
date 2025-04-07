@@ -437,6 +437,9 @@ class DB {
 		try {
 			const connection = await this._getConnection(false);
 			try {
+				await connection.query(
+					`DROP DATABASE ${config.db.connection.database}`
+				);
 				const dbExists = await this.checkDatabaseExists(connection);
 				console.log(
 					dbExists ? "Database exists" : "Database does not exist, creating it"
@@ -458,9 +461,9 @@ class DB {
 					(async () => {
 						for (const d of defaultData.franchises) {
 							const { stores, ...f } = d;
-							const { id } =
+							const { id = 1 } =
 								(await this.tryIgnore(this.createFranchise(f))) ?? {};
-							if (!id) continue;
+							if (id === undefined) continue;
 							for (const s of stores) this.tryIgnore(this.createStore(id, s));
 						}
 					})();
