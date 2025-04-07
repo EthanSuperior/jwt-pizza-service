@@ -429,7 +429,7 @@ class DB {
 		try {
 			const connection = await this._getConnection(false);
 			try {
-				await connection.query(`DROP DATABASE IF EXISTS ${config.db.connection.database}`);
+				// await connection.query(`DROP DATABASE IF EXISTS ${config.db.connection.database}`);
 				const dbExists = await this.checkDatabaseExists(connection);
 				console.log(
 					dbExists ? "Database exists" : "Database does not exist, creating it"
@@ -447,28 +447,30 @@ class DB {
 					await connection.query(statement);
 				}
 
-				try {
-					defaultData.users.forEach((u) => {
-						try {
-							this.addUser(u);
-						} catch (e) {}
-					});
-					defaultData.franchises.forEach((d)=>{
-						{stores,...f} = d;
-						try {
-						const {id} = this.createFranchise(f);
-						stores.forEach((s)=>{
+				if (!dbExists) {
+					try {
+						defaultData.users.forEach((u) => {
 							try {
-								this.createStore(id, s);
+								this.addUser(u);
 							} catch (e) {}
 						});
-						} catch (e) {}
-					});
-					defaultData.menu.forEach((item)=>{
-						try {
-							this.addMenuItem(item);
-						} catch (e) {}
-					});
+						defaultData.franchises.forEach((d)=>{
+							{stores,...f} = d;
+							try {
+							const {id} = this.createFranchise(f);
+							stores.forEach((s)=>{
+								try {
+									this.createStore(id, s);
+								} catch (e) {}
+							});
+							} catch (e) {}
+						});
+						defaultData.menu.forEach((item)=>{
+							try {
+								this.addMenuItem(item);
+							} catch (e) {}
+						});
+					} catch (e){}
 				}
 			} finally {
 				connection.end();
