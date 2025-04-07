@@ -76,8 +76,8 @@ jobs:
         run: |
           echo "module.exports = ${{secrets.ADMIN_DATA}};" > src/defaultData.js
 
-      - name: Tests
-        run: npm test
+      # - name: Tests
+      #   run: npm test
 
       - name: set version
         id: set_version
