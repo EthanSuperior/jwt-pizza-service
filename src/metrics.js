@@ -120,7 +120,9 @@ metricsRouter.use((req, res, next) => {
 							(a, v) => a + parseFloat("" + v.price),
 							0
 						);
-					} catch {}
+					} catch {
+						console.error("");
+					}
 				}
 				latencyPizza += (Date.now() - startTime) / 100;
 			}
