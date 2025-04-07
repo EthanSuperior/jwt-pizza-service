@@ -425,6 +425,14 @@ class DB {
 		return connection;
 	}
 
+	async tryIgnore(f) {
+		try {
+			return await f;
+		} catch {
+			console.log("");
+		}
+	}
+
 	async initializeDatabase() {
 		try {
 			const connection = await this._getConnection(false);
@@ -445,21 +453,19 @@ class DB {
 				for (const statement of dbModel.tableCreateStatements) {
 					await connection.query(statement);
 				}
-
 				{
-					defaultData.users.forEach((u) => {
-						this.addUser(u);
-					});
-					defaultData.franchises.forEach((d) => {
-						const { stores, ...f } = d;
-						const { id } = this.createFranchise(f);
-						stores.forEach((s) => {
-							this.createStore(id, s);
-						});
-					});
-					defaultData.menu.forEach((item) => {
-						this.addMenuItem(item);
-					});
+					for (const u of defaultData.users) this.tryIgnore(this.addUser(u));
+					(async () => {
+						for (const d of defaultData.franchises) {
+							const { stores, ...f } = d;
+							const { id } =
+								(await this.tryIgnore(this.createFranchise(f))) ?? {};
+							if (!id) continue;
+							for (const s of stores) this.tryIgnore(this.createStore(id, s));
+						}
+					})();
+					for (const item of defaultData.menu)
+						this.tryIgnore(this.addMenuItem(item));
 				}
 			} finally {
 				connection.end();
