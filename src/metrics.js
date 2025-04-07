@@ -2,6 +2,8 @@ const express = require("express");
 const os = require("os");
 const config = require("./config");
 const metricsRouter = express.Router();
+const Logger = require("pizza-logger");
+const logger = new Logger(config);
 
 function sendMetricsPeriodically(period) {
 	return setInterval(() => {
@@ -15,7 +17,7 @@ function sendMetricsPeriodically(period) {
 			metrics.push(...latencyMetrics());
 			sendMetricToGrafana(metrics);
 		} catch (error) {
-			console.log("Error sending metrics", error);
+			logger.log("warn", "metrics", "Error sending metrics", error);
 		}
 	}, period);
 }
@@ -174,14 +176,16 @@ function sendMetricToGrafana(metrics) {
 		.then((response) => {
 			if (!response.ok) {
 				response.text().then((text) => {
-					console.error(
+					logger.log(
+						"warn",
+						"metrics",
 						`Failed to push metrics data to Grafana: ${text}\n${body}`
 					);
 				});
 			}
 		})
 		.catch((error) => {
-			console.error("Error pushing metrics:", error);
+			logger.log("warn", "metrics", "Error pushing metrics:", error);
 		});
 }
 
