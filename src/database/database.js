@@ -425,21 +425,13 @@ class DB {
 		return connection;
 	}
 
-	async tryIgnore(f) {
-		try {
-			return await f;
-		} catch (e) {
-			console.error(e);
-		}
-	}
-
 	async initializeDatabase() {
 		try {
 			const connection = await this._getConnection(false);
 			try {
-				await connection.query(
-					`DROP DATABASE ${config.db.connection.database}`
-				);
+				// await connection.query(
+				// 	`DROP DATABASE ${config.db.connection.database}`
+				// );
 				const dbExists = await this.checkDatabaseExists(connection);
 				console.log(
 					dbExists ? "Database exists" : "Database does not exist, creating it"
@@ -456,23 +448,7 @@ class DB {
 				for (const statement of dbModel.tableCreateStatements) {
 					await connection.query(statement);
 				}
-				{
-					(async () => {
-						for (const u of defaultData.users)
-							await this.tryIgnore(this.addUser(u));
-						for (const d of defaultData.franchises) {
-							const { stores, ...f } = d;
-							const { id = 1 } =
-								(await this.tryIgnore(this.createFranchise(f))) ?? {};
-							if (id === undefined) continue;
-							for (const s of stores)
-								await this.tryIgnore(this.createStore(id, s));
-							console.log(d);
-						}
-						for (const item of defaultData.menu)
-							await this.tryIgnore(this.addMenuItem(item));
-					})();
-				}
+				if (!dbExists) this._createDefaults();
 			} finally {
 				connection.end();
 			}
@@ -487,6 +463,22 @@ class DB {
 		}
 	}
 
+	async _createDefaults() {
+		async function tIgn(f) {
+			try {
+				return await f;
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		for (const u of defaultData.users) await tIgn(this.addUser(u));
+		for (const d of defaultData.franchises) {
+			const { stores, ...f } = d;
+			const { id = 1 } = (await tIgn(this.createFranchise(f))) ?? {};
+			for (const s of stores) await tIgn(this.createStore(id, s));
+		}
+		for (const item of defaultData.menu) await tIgn(this.addMenuItem(item));
+	}
 	async checkDatabaseExists(connection) {
 		const [rows] = await connection.execute(
 			`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?`,
