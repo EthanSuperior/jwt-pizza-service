@@ -51,12 +51,12 @@ class DB {
 			for (const role of user.roles) {
 				switch (role.role) {
 					case Role.Franchisee: {
-						const franchiseId = await this.getID(
-							connection,
-							"name",
-							role.object,
-							"franchise"
-						);
+						const franchiseId = userId; //await this.getID(
+						// 	connection,
+						// 	"name",
+						// 	role,
+						// 	"franchise"
+						// );
 						await this.query(
 							connection,
 							`INSERT INTO userRole (userId, role, objectId) VALUES (?, ?, ?)`,
@@ -428,8 +428,8 @@ class DB {
 	async tryIgnore(f) {
 		try {
 			return await f;
-		} catch {
-			console.log("");
+		} catch (e) {
+			console.error(e);
 		}
 	}
 
@@ -457,18 +457,21 @@ class DB {
 					await connection.query(statement);
 				}
 				{
-					for (const u of defaultData.users) this.tryIgnore(this.addUser(u));
 					(async () => {
+						for (const u of defaultData.users)
+							await this.tryIgnore(this.addUser(u));
 						for (const d of defaultData.franchises) {
 							const { stores, ...f } = d;
 							const { id = 1 } =
 								(await this.tryIgnore(this.createFranchise(f))) ?? {};
 							if (id === undefined) continue;
-							for (const s of stores) this.tryIgnore(this.createStore(id, s));
+							for (const s of stores)
+								await this.tryIgnore(this.createStore(id, s));
+							console.log(d);
 						}
+						for (const item of defaultData.menu)
+							await this.tryIgnore(this.addMenuItem(item));
 					})();
-					for (const item of defaultData.menu)
-						this.tryIgnore(this.addMenuItem(item));
 				}
 			} finally {
 				connection.end();
