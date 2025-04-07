@@ -454,23 +454,23 @@ class DB {
 								this.addUser(u);
 							} catch (e) {}
 						});
-						defaultData.franchises.forEach((d)=>{
-							{stores,...f} = d;
+						defaultData.franchises.forEach((d) => {
+							const { stores, ...f } = d;
 							try {
-							const {id} = this.createFranchise(f);
-							stores.forEach((s)=>{
-								try {
-									this.createStore(id, s);
-								} catch (e) {}
-							});
+								const { id } = this.createFranchise(f);
+								stores.forEach((s) => {
+									try {
+										this.createStore(id, s);
+									} catch (e) {}
+								});
 							} catch (e) {}
 						});
-						defaultData.menu.forEach((item)=>{
+						defaultData.menu.forEach((item) => {
 							try {
 								this.addMenuItem(item);
 							} catch (e) {}
 						});
-					} catch (e){}
+					} catch (e) {}
 				}
 			} finally {
 				connection.end();
