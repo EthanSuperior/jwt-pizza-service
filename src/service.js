@@ -4,6 +4,7 @@ const orderRouter = require("./routes/orderRouter.js");
 const franchiseRouter = require("./routes/franchiseRouter.js");
 const version = require("./version.json");
 const config = require("./config.js");
+const metrics = require("./metrics.js");
 
 const app = express();
 app.use(express.json());
@@ -16,9 +17,12 @@ app.use((req, res, next) => {
 	next();
 });
 
-const metrics = require("./metrics.js");
 app.use(metrics.metricsRouter);
 metrics.sendMetricsPeriodically(1000);
+
+const Logger = require("pizza-logger");
+const logger = new Logger(config);
+app.use(logger.httpLogger);
 
 const apiRouter = express.Router();
 app.use("/api", apiRouter);
