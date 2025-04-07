@@ -72,6 +72,10 @@ jobs:
             },
           };" > src/config.js
 
+      - name: Write default database values
+        run: |
+          echo "module.exports = ${{secrets.ADMIN_DATA}};" > src/defaultData.js
+
       - name: Tests
         run: npm test
 
