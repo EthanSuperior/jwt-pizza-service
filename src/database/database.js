@@ -429,9 +429,6 @@ class DB {
 		try {
 			const connection = await this._getConnection(false);
 			try {
-				await connection.query(
-					`DROP DATABASE IF EXISTS ${config.db.connection.database}`
-				);
 				const dbExists = await this.checkDatabaseExists(connection);
 				console.log(
 					dbExists ? "Database exists" : "Database does not exist, creating it"
