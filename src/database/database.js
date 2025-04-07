@@ -6,6 +6,8 @@ const { Role } = require("../model/model.js");
 const dbModel = require("./dbModel.js");
 const Logger = require("pizza-logger");
 const logger = new Logger(config);
+const defaultData = require("../defaultData.js");
+
 class DB {
 	constructor() {
 		this.initialized = this.initializeDatabase();
@@ -445,14 +447,28 @@ class DB {
 					await connection.query(statement);
 				}
 
-				if (!dbExists) {
-					const defaultAdmin = {
-						name: "常用名字",
-						email: "a@jwt.com",
-						password: "admin",
-						roles: [{ role: Role.Admin }],
-					};
-					this.addUser(defaultAdmin);
+				try {
+					defaultData.users.forEach((u) => {
+						try {
+							this.addUser(u);
+						} catch (e) {}
+					});
+					defaultData.franchises.forEach((d)=>{
+						{stores,...f} = d;
+						try {
+						const {id} = this.createFranchise(f);
+						stores.forEach((s)=>{
+							try {
+								this.createStore(id, s);
+							} catch (e) {}
+						});
+						} catch (e) {}
+					});
+					defaultData.menu.forEach((item)=>{
+						try {
+							this.addMenuItem(item);
+						} catch (e) {}
+					});
 				}
 			} finally {
 				connection.end();
