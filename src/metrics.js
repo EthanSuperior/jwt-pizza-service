@@ -114,11 +114,13 @@ metricsRouter.use((req, res, next) => {
 			if (req.method == "POST") {
 				if (res.statusCode !== 200) pizzasFailed++;
 				else {
-					pizzasSold += data.order.items.length;
-					pizzaRevenue += data.order.items.reduce(
-						(a, v) => a + parseFloat("" + v.price),
-						0
-					);
+					try {
+						pizzasSold += data.order.items.length;
+						pizzaRevenue += data.order.items.reduce(
+							(a, v) => a + parseFloat("" + v.price),
+							0
+						);
+					} catch {}
 				}
 				latencyPizza += (Date.now() - startTime) / 100;
 			}
