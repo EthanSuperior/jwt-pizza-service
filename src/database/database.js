@@ -446,7 +446,7 @@ class DB {
 					await connection.query(statement);
 				}
 
-				if (!dbExists) {
+				{
 					defaultData.users.forEach((u) => {
 						this.addUser(u);
 					});
