@@ -448,29 +448,19 @@ class DB {
 				}
 
 				if (!dbExists) {
-					try {
-						defaultData.users.forEach((u) => {
-							try {
-								this.addUser(u);
-							} catch {}
+					defaultData.users.forEach((u) => {
+						this.addUser(u);
+					});
+					defaultData.franchises.forEach((d) => {
+						const { stores, ...f } = d;
+						const { id } = this.createFranchise(f);
+						stores.forEach((s) => {
+							this.createStore(id, s);
 						});
-						defaultData.franchises.forEach((d) => {
-							const { stores, ...f } = d;
-							try {
-								const { id } = this.createFranchise(f);
-								stores.forEach((s) => {
-									try {
-										this.createStore(id, s);
-									} catch {}
-								});
-							} catch {}
-						});
-						defaultData.menu.forEach((item) => {
-							try {
-								this.addMenuItem(item);
-							} catch {}
-						});
-					} catch {}
+					});
+					defaultData.menu.forEach((item) => {
+						this.addMenuItem(item);
+					});
 				}
 			} finally {
 				connection.end();
