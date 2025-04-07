@@ -1,8 +1,4 @@
 const app = require("./service.js");
-const metrics = require("./metrics.js");
-
-app.use(metrics.metricsRouter);
-metrics.sendMetricsPeriodically(1000);
 
 const port = process.argv[2] || 3000;
 app.listen(port, () => {

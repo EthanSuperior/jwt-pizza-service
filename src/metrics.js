@@ -31,27 +31,11 @@ function httpMetrics() {
 	}
 	return metrics;
 }
-metricsRouter.use((req, _res, next) => {
-	httpReq[req.method]++;
-	httpReq.TOTAL++;
-	next();
-});
 
 let activeUsers = 0;
 function userMetrics() {
 	return [metricObj("active_users", activeUsers, "sum", "1")];
 }
-metricsRouter.get("/api/auth", (req, res, next) => {
-	const originalSend = res.send;
-	res.send = function (data) {
-		if (res.statusCode === 200) {
-			if (req.method == "POST" || req.method == "PUT") activeUsers++;
-			else if (req.method == "DELETE") activeUsers--;
-		}
-		originalSend.call(this, data);
-	};
-	next();
-});
 
 let authSucesses = 0;
 let authFailures = 0;
@@ -64,17 +48,6 @@ function authMetrics() {
 	authFailures = 0;
 	return metrics;
 }
-metricsRouter.get("/api/auth", (req, res, next) => {
-	const originalSend = res.send;
-	res.send = function (data) {
-		if (req.method == "POST" || req.method == "PUT") {
-			if (res.statusCode === 200) authSucesses++;
-			else authFailures++;
-		}
-		originalSend.call(this, data);
-	};
-	next();
-});
 
 function systemMetrics() {
 	function getCpuUsagePercentage() {
@@ -108,22 +81,8 @@ function purchaseMetrics() {
 	];
 	pizzasSold = 0;
 	pizzasFailed = 0;
-	pizzaRevenue = 0;
 	return metrics;
 }
-metricsRouter.post("/api/order", (req, res, next) => {
-	const originalSend = res.send;
-	console.log("", req.data);
-	res.send = function (data) {
-		if (res.statusCode !== 200) pizzasFailed++;
-		else {
-			pizzasSold += data.order.items.length;
-			pizzaRevenue += data.order.items.reduce((a, v) => a + v.price, 0);
-		}
-		originalSend.call(this, data);
-	};
-	next();
-});
 
 let latencyServer = 0;
 let latencyPizza = 0;
@@ -136,20 +95,35 @@ function latencyMetrics() {
 	latencyPizza = 0;
 	return metrics;
 }
-metricsRouter.use((_req, res, next) => {
+
+metricsRouter.use((req, res, next) => {
+	httpReq[req.method]++;
+	httpReq.TOTAL++;
+	const startTime = Date.now();
 	const originalSend = res.send;
-	const startTime = Date.now() * 1000000;
 	res.send = function (data) {
-		latencyServer += Date.now() * 1000000 - startTime;
-		originalSend.call(this, data);
-	};
-	next();
-});
-metricsRouter.post("/api/order", (_req, res, next) => {
-	const originalSend = res.send;
-	const startTime = Date.now() * 1000000;
-	res.send = function (data) {
-		latencyPizza += Date.now() * 1000000 - startTime;
+		if (req.originalUrl === "/api/auth") {
+			if (req.method == "POST" || req.method == "PUT") {
+				if (res.statusCode === 200) {
+					activeUsers++;
+					authSucesses++;
+				} else authFailures++;
+			} else if (req.method == "DELETE" && res.statusCode === 200)
+				activeUsers--;
+		} else if (req.originalUrl === "/api/order") {
+			if (req.method == "POST") {
+				if (res.statusCode !== 200) pizzasFailed++;
+				else {
+					pizzasSold += data.order.items.length;
+					pizzaRevenue += data.order.items.reduce(
+						(a, v) => a + parseFloat("" + v.price),
+						0
+					);
+				}
+				latencyPizza += (Date.now() - startTime) / 100;
+			}
+		}
+		latencyServer += Date.now() - startTime;
 		originalSend.call(this, data);
 	};
 	next();
