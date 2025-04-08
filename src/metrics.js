@@ -17,7 +17,7 @@ function sendMetricsPeriodically(period) {
 			metrics.push(...latencyMetrics());
 			sendMetricToGrafana(metrics);
 		} catch (error) {
-			logger.log("warn", "metrics", "Error sending metrics", error);
+			logger.log("warn", "metrics", "Error sending metrics", error.message);
 		}
 	}, period);
 }
@@ -185,7 +185,7 @@ function sendMetricToGrafana(metrics) {
 			}
 		})
 		.catch((error) => {
-			logger.log("warn", "metrics", "Error pushing metrics:", error);
+			logger.log("warn", "metrics", "Error pushing metrics:", error.message);
 		});
 }
 

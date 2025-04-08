@@ -4,8 +4,8 @@ const logger = new Logger(config);
 class StatusCodeError extends Error {
 	constructor(message, statusCode) {
 		super(message);
-		logger.unhandledErrorLogger(this);
 		this.statusCode = statusCode;
+		logger.unhandledErrorLogger(this);
 	}
 }
 
