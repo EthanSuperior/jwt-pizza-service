@@ -467,7 +467,7 @@ class DB {
 			try {
 				return await f;
 			} catch (e) {
-				void 0;
+				void e;
 			}
 		}
 		for (const u of defaultData.users) await tIgn(this.addUser(u));
