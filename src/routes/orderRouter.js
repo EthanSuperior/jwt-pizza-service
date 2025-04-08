@@ -90,7 +90,7 @@ orderRouter.put(
 );
 
 // failure choas
-orderRouter.post("/", (req, res, next) => {
+orderRouter.post("/", (_req, _res, next) => {
 	if (enableChaos && Math.random() < 0.5) {
 		throw new StatusCodeError("Chaos monkey", 500);
 	}
