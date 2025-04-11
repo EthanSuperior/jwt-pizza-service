@@ -14,6 +14,7 @@ class DB {
 	}
 
 	async getMenu() {
+		this.initialized = this.initializeDatabase();
 		const connection = await this.getConnection();
 		try {
 			const rows = await this.query(connection, `SELECT * FROM menu`);
@@ -417,7 +418,6 @@ class DB {
 	}
 
 	async getConnection() {
-		this.initialized = this.initializeDatabase();
 		// Make sure the database is initialized before trying to get a connection.
 		await this.initialized;
 		return this._getConnection();
