@@ -21,6 +21,7 @@ app.use(metrics.metricsRouter);
 metrics.sendMetricsPeriodically(1000);
 
 const Logger = require("pizza-logger");
+const { asyncHandler } = require("./endpointHelper.js");
 const logger = new Logger(config);
 app.use(logger.httpLogger);
 
@@ -30,6 +31,21 @@ apiRouter.use("/auth", authRouter);
 apiRouter.use("/order", orderRouter);
 apiRouter.use("/franchise", franchiseRouter);
 
+apiRouter.use(
+	"/docs/factory",
+	asyncHandler(async (req, res) => {
+		const r = await fetch(`${config.factory.url}/api/docs`, {
+			method: "GET",
+		});
+		const j = await r.json();
+		res.json({
+			version: version.version,
+			endpoints: j?.endpoints,
+			// config: { factory: config.factory.url, db: config.db.connection.host },
+		});
+	})
+);
+
 apiRouter.use("/docs", (req, res) => {
 	res.json({
 		version: version.version,
@@ -38,7 +54,7 @@ apiRouter.use("/docs", (req, res) => {
 			...orderRouter.endpoints,
 			...franchiseRouter.endpoints,
 		],
-		config: { factory: config.factory.url, db: config.db.connection.host },
+		// config: { factory: config.factory.url, db: config.db.connection.host },
 	});
 });
 
@@ -57,9 +73,7 @@ app.use("*", (req, res) => {
 
 // Default error handler for all exceptions and errors.
 app.use((err, req, res, next) => {
-	res
-		.status(err.statusCode ?? 500)
-		.json({ message: err.message, stack: err.stack });
+	res.status(err.statusCode ?? 500).json({ message: err.message });
 	next();
 });
 

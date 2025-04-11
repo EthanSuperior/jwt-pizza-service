@@ -163,4 +163,23 @@ orderRouter.post(
 	})
 );
 
+orderRouter.post(
+	"/verify",
+	authRouter.authenticateToken,
+	asyncHandler(async (req, res) => {
+		const { jwt } = req.body;
+		const r = await fetch(`${config.factory.url}/api/order`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				authorization: `Bearer ${config.factory.apiKey}`,
+			},
+			body: JSON.stringify({ jwt }),
+		});
+		const j = await r.json();
+		delete j?.payload?.vendor;
+		res.send(j);
+	})
+);
+
 module.exports = orderRouter;

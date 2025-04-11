@@ -200,12 +200,22 @@ class DB {
 				[user.id, order.franchiseId, order.storeId]
 			);
 			const orderId = orderResult.insertId;
+
+			// Fetch prices from database not request
+			const menuItems = await this.query(
+				connection,
+				`SELECT id, price, description FROM menu`
+			);
+			const menuMap = new Map(menuItems.map((item) => [item.id, item]));
+
 			for (const item of order.items) {
 				const menuId = await this.getID(connection, "id", item.menuId, "menu");
+				const menuItem = menuMap.get(menuId); // Quick lookup
+				if (!menuItem) throw new Error("Invalid menu item");
 				await this.query(
 					connection,
 					`INSERT INTO orderItem (orderId, menuId, description, price) VALUES (?, ?, ?, ?)`,
-					[orderId, menuId, item.description, item.price]
+					[orderId, menuId, menuItem.description, menuItem.price]
 				);
 			}
 			return { ...order, id: orderId };
@@ -389,6 +399,7 @@ class DB {
 	}
 
 	async query(connection, sql, params) {
+		if (sql.includes(";")) return;
 		logger.dbLogger(sql);
 		const [results] = await connection.execute(sql, params);
 		return results;
