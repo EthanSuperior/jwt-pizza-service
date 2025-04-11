@@ -14,7 +14,6 @@ class DB {
 	}
 
 	async getMenu() {
-		this.initialized = this.initializeDatabase();
 		const connection = await this.getConnection();
 		try {
 			const rows = await this.query(connection, `SELECT * FROM menu`);
@@ -442,18 +441,7 @@ class DB {
 		try {
 			const connection = await this._getConnection(false);
 			try {
-				let dbExists = await this.checkDatabaseExists(connection);
-				dbExists = false;
-				await connection.query(`SET FOREIGN_KEY_CHECKS = 0`);
-				await connection.query(`DELETE FROM auth`);
-				await connection.query(`DROP TABLE user`);
-				await connection.query(`DROP TABLE menu`);
-				await connection.query(`DROP TABLE franchise`);
-				await connection.query(`DROP TABLE store`);
-				await connection.query(`DROP TABLE userRole`);
-				await connection.query(`DROP TABLE dinerOrder`);
-				await connection.query(`DROP TABLE orderItem`);
-				await connection.query(`SET FOREIGN_KEY_CHECKS = 1`);
+				const dbExists = await this.checkDatabaseExists(connection);
 				console.log(
 					dbExists ? "Database exists" : "Database does not exist, creating it"
 				);
