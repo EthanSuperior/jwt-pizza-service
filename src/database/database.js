@@ -429,6 +429,7 @@ class DB {
 			password: config.db.connection.password,
 			connectTimeout: config.db.connection.connectTimeout,
 			decimalNumbers: true,
+			multipleStatements: false,
 		});
 		if (setUse) {
 			await connection.query(`USE ${config.db.connection.database}`);
@@ -440,10 +441,16 @@ class DB {
 		try {
 			const connection = await this._getConnection(false);
 			try {
-				await connection.query(
-					`DROP DATABASE ${config.db.connection.database}`
-				);
 				const dbExists = await this.checkDatabaseExists(connection);
+				dbExists = false;
+				await connection.query(`DROP TABLE auth`);
+				await connection.query(`DROP TABLE user`);
+				await connection.query(`DROP TABLE menu`);
+				await connection.query(`DROP TABLE franchise`);
+				await connection.query(`DROP TABLE store`);
+				await connection.query(`DROP TABLE userRole`);
+				await connection.query(`DROP TABLE dinerOrder`);
+				await connection.query(`DROP TABLE orderItem`);
 				console.log(
 					dbExists ? "Database exists" : "Database does not exist, creating it"
 				);
