@@ -456,7 +456,7 @@ class DB {
 				for (const statement of dbModel.tableCreateStatements) {
 					await connection.query(statement);
 				}
-				if (!dbExists) this._createDefaults();
+				this._createDefaults();
 			} finally {
 				connection.end();
 			}
