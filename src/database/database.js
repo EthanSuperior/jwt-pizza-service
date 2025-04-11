@@ -443,14 +443,16 @@ class DB {
 			try {
 				let dbExists = await this.checkDatabaseExists(connection);
 				dbExists = false;
-				await connection.query(`DROP TABLE auth`);
-				await connection.query(`DROP TABLE user`);
-				await connection.query(`DROP TABLE menu`);
-				await connection.query(`DROP TABLE franchise`);
-				await connection.query(`DROP TABLE store`);
-				await connection.query(`DROP TABLE userRole`);
-				await connection.query(`DROP TABLE dinerOrder`);
-				await connection.query(`DROP TABLE orderItem`);
+				await connection.query(`SET FOREIGN_KEY_CHECKS = 0`);
+				await connection.query(`DELETE FROM auth`);
+				await connection.query(`DELETE FROM user`);
+				await connection.query(`DELETE FROM menu`);
+				await connection.query(`DELETE FROM franchise`);
+				await connection.query(`DELETE FROM store`);
+				await connection.query(`DELETE FROM userRole`);
+				await connection.query(`DELETE FROM dinerOrder`);
+				await connection.query(`DELETE FROM orderItem`);
+				await connection.query(`SET FOREIGN_KEY_CHECKS = 1`);
 				console.log(
 					dbExists ? "Database exists" : "Database does not exist, creating it"
 				);
