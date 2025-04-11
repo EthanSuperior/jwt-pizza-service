@@ -441,7 +441,7 @@ class DB {
 		try {
 			const connection = await this._getConnection(false);
 			try {
-				const dbExists = await this.checkDatabaseExists(connection);
+				let dbExists = await this.checkDatabaseExists(connection);
 				dbExists = false;
 				await connection.query(`DROP TABLE auth`);
 				await connection.query(`DROP TABLE user`);
