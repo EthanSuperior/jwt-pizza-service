@@ -429,7 +429,6 @@ class DB {
 			password: config.db.connection.password,
 			connectTimeout: config.db.connection.connectTimeout,
 			decimalNumbers: true,
-			multipleStatements: false,
 		});
 		if (setUse) {
 			await connection.query(`USE ${config.db.connection.database}`);
