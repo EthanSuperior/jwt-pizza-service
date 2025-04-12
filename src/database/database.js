@@ -466,7 +466,7 @@ class DB {
 				JSON.stringify({
 					message: "Error initializing database",
 					exception: err.message,
-					connection: config.db.connection,
+					// connection: config.db.connection,
 				})
 			);
 		}
