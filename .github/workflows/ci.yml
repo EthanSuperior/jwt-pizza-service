@@ -50,7 +50,7 @@ jobs:
                 host: '127.0.0.1',
                 user: 'root',
                 password: 'tempdbpassword',
-                database: 'pizza2',
+                database: 'testpizza',
                 connectTimeout: 60000,
               },
               listPerPage: 10,
