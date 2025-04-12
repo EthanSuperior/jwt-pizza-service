@@ -417,6 +417,7 @@ class DB {
 	}
 
 	async getConnection() {
+		this.initialized = this.initializeDatabase();
 		// Make sure the database is initialized before trying to get a connection.
 		await this.initialized;
 		return this._getConnection();
