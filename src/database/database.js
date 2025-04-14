@@ -6,7 +6,7 @@ const { Role } = require("../model/model.js");
 const dbModel = require("./dbModel.js");
 const Logger = require("pizza-logger");
 const logger = new Logger(config);
-const defaultData = require("../defaultData.js");
+// const defaultData = require("../defaultData.js");
 
 class DB {
 	constructor() {
@@ -416,7 +416,6 @@ class DB {
 	}
 
 	async getConnection() {
-		this.initializeDatabase();
 		// Make sure the database is initialized before trying to get a connection.
 		await this.initialized;
 		return this._getConnection();
@@ -457,7 +456,7 @@ class DB {
 				for (const statement of dbModel.tableCreateStatements) {
 					await connection.query(statement);
 				}
-				this._createDefaults();
+				// if (!dbExists) this._createDefaults();
 			} finally {
 				connection.end();
 			}
@@ -472,22 +471,22 @@ class DB {
 		}
 	}
 
-	async _createDefaults() {
-		async function tIgn(f) {
-			try {
-				return await f;
-			} catch (e) {
-				void e;
-			}
-		}
-		for (const u of defaultData.users) await tIgn(this.addUser(u));
-		for (const d of defaultData.franchises) {
-			const { stores, ...f } = d;
-			const { id = 1 } = (await tIgn(this.createFranchise(f))) ?? {};
-			for (const s of stores) await tIgn(this.createStore(id, s));
-		}
-		for (const item of defaultData.menu) await tIgn(this.addMenuItem(item));
-	}
+	// async _createDefaults() {
+	// 	async function tIgn(f) {
+	// 		try {
+	// 			return await f;
+	// 		} catch (e) {
+	// 			void e;
+	// 		}
+	// 	}
+	// 	for (const u of defaultData.users) await tIgn(this.addUser(u));
+	// 	for (const d of defaultData.franchises) {
+	// 		const { stores, ...f } = d;
+	// 		const { id = 1 } = (await tIgn(this.createFranchise(f))) ?? {};
+	// 		for (const s of stores) await tIgn(this.createStore(id, s));
+	// 	}
+	// 	for (const item of defaultData.menu) await tIgn(this.addMenuItem(item));
+	// }
 	async checkDatabaseExists(connection) {
 		const [rows] = await connection.execute(
 			`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?`,
